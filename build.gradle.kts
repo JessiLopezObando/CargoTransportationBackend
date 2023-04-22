@@ -30,6 +30,9 @@ dependencies {
 	implementation ("org.springframework.boot:spring-boot-starter-mail")
 	// mongoDB validation
 	implementation ("org.springframework.boot:spring-boot-starter-validation")
+	// mapper
+	implementation ("org.reactivecommons.utils:object-mapper:0.1.0")
+
 }
 
 tasks.withType<Test> {

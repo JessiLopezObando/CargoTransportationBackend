@@ -28,10 +28,12 @@ dependencies {
 
 	// email service
 	implementation ("org.springframework.boot:spring-boot-starter-mail")
-	// mongoDB validation
+	// mongodb validation
 	implementation ("org.springframework.boot:spring-boot-starter-validation")
 	// mapper
 	implementation ("org.reactivecommons.utils:object-mapper:0.1.0")
+	// swagger doc
+	implementation ("org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.4")
 
 }
 

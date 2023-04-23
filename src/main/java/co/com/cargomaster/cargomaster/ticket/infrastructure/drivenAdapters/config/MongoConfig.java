@@ -1,4 +1,4 @@
-package co.com.cargomaster.cargomaster.infrastructure.drivenAdapters.config;
+package co.com.cargomaster.cargomaster.ticket.infrastructure.drivenAdapters.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;

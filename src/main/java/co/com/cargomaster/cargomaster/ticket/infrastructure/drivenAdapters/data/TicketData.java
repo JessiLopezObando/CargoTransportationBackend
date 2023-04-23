@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.UUID;
 
 @Data
-@Document(collection = "item")
+@Document(collection = "tickets")
 @NoArgsConstructor
 public class TicketData {
 
@@ -19,7 +19,7 @@ public class TicketData {
     private String id = UUID.randomUUID().toString().substring(0,10);
     @NotNull(message = "driverID  can't be null")
     @NotBlank(message = "driverID can't be empty")
-    private String driverID;
+    private String driverId;
     @NotNull(message = "origin  can't be null")
     @NotBlank(message = "origin can't be empty")
     private String origin;

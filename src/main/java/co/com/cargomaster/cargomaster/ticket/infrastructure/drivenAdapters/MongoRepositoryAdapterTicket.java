@@ -62,4 +62,13 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("ticket with id: " + id + " was not found")))
                 .flatMap(ticketData -> this.repository.delete(ticketData)).thenReturn(id);
     }
+
+    @Override
+    public Flux<Ticket> getTicketByDriverAndStatus(String driverId, String status) {
+        return this.repository.findByDriverIdAndStatus(driverId, status)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("tickets with the id: " + driverId + " was not found")))
+                .map(itemData -> mapper.map(itemData, Ticket.class));
+    }
+
+
 }

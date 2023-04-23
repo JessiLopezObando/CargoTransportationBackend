@@ -11,5 +11,6 @@ public interface TicketRepository {
     Mono<Ticket> saveTicket(Ticket ticket);
     Mono<Ticket> updateTicket(String id, Ticket ticket);
     Mono<String> deleteTicket(String id);
+    Flux<Ticket> getTicketByDriverAndStatus (String driverId, String status);
 
 }

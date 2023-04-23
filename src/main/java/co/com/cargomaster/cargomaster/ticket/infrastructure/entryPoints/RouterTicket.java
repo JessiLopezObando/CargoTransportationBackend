@@ -2,6 +2,7 @@ package co.com.cargomaster.cargomaster.ticket.infrastructure.entryPoints;
 
 import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketdelete.TicketDeleteUseCase;
+import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketfindbydriveridandstatus.TicketgetByDriverIdAndStatusUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetall.TicketGetAllUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetbyid.TicketGetByIdUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketsave.TicketSaveUseCase;
@@ -45,6 +46,26 @@ public class RouterTicket {
                 request -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromPublisher(ticketGetAllUseCase.get(), Ticket.class))
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+        );
+    }
+
+    @Bean
+    @RouterOperation(path = "/tickets/{driverId}/{status}", produces = {
+            MediaType.APPLICATION_JSON_VALUE},
+            beanClass = TicketgetByDriverIdAndStatusUseCase.class, method = RequestMethod.GET,
+            beanMethod = "apply",
+            operation = @Operation(operationId = "getTicketByDriverIdAndStatus", tags = "Tickets usecases",
+                    responses = {
+                            @ApiResponse(responseCode = "200", description = "Success",
+                                    content = @Content(schema = @Schema(implementation = Ticket.class))),
+                            @ApiResponse(responseCode = "204", description = "Nothing to show")
+                    }))
+    public RouterFunction<ServerResponse> getTicketsByDriverIdAndStatus (TicketgetByDriverIdAndStatusUseCase ticketgetByDriverIdAndStatus) {
+        return route(GET("/tickets/driverId/{driverId}/status/{status}"),
+                request -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromPublisher(ticketgetByDriverIdAndStatus.apply(request.pathVariable("driverId"), request.pathVariable("status")), Ticket.class))
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
         );
     }

@@ -19,7 +19,7 @@ public class TicketData {
     private String id = UUID.randomUUID().toString().substring(0,10);
     @NotNull(message = "driverID  can't be null")
     @NotBlank(message = "driverID can't be empty")
-    private String driverID;
+    private String driverId;
     @NotNull(message = "origin  can't be null")
     @NotBlank(message = "origin can't be empty")
     private String origin;

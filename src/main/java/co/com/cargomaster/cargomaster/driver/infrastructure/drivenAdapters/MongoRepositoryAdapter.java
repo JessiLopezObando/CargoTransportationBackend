@@ -34,7 +34,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
     @Override
     public Mono<Driver> saveDriver(Driver driver) {
         return repository
-                .save(mapper.map(driver, DriverData.class))
+                .save(mapper.map(driver.generateUsername(), DriverData.class))
                 .switchIfEmpty(Mono.empty())
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }

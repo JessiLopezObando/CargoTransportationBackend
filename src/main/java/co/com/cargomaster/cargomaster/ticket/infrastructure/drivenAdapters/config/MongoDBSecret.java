@@ -1,4 +1,4 @@
-package co.com.cargomaster.cargomaster.infrastructure.drivenAdapters.config;
+package co.com.cargomaster.cargomaster.ticket.infrastructure.drivenAdapters.config;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package co.com.cargomaster.cargomaster.application.config;
+package co.com.cargomaster.cargomaster.applicationconfig;
 
 import org.reactivecommons.utils.ObjectMapper;
 import org.reactivecommons.utils.ObjectMapperImp;

@@ -8,13 +8,12 @@ import reactor.core.publisher.Mono;
 import java.util.function.BiFunction;
 
 @RequiredArgsConstructor
-public class DriverUpdateWeightUseCase implements BiFunction<String, Double, Mono<Driver>> {
+public class DriverUpdateWeightOnDeliveredTicketUseCase implements BiFunction<String, Double, Mono<Driver>> {
 
     private final DriversGateway gateway;
 
-
     @Override
-    public Mono<Driver> apply(String id, Double requestedWeight) {
-        return this.gateway.updateVehicleCapacity(id, requestedWeight);
+    public Mono<Driver> apply(String id, Double weight) {
+        return gateway.updateVehicleCapacityOnDeliveredTicket(id, weight);
     }
 }

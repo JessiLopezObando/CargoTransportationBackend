@@ -60,16 +60,25 @@ public class MongoRepositoryAdapter implements DriversGateway {
     }
 
     @Override
-    public Mono<Driver> updateVehicleCapacity(String id, Double weightRequested) {
+    public Mono<Driver> updateVehicleCapacityOnAcceptedTicket(String id, Double weightRequested) {
         return repository
                 .findById(id)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("driver with id: " + id + " was not found")))
                 .flatMap(driverData -> {
-                        return repository.save(driverData.updateVehicleCapacity(weightRequested));
+                        return repository.save(driverData.vehicleCapacityOnAcceptedTicket(weightRequested));
                 })
                 .map(driverData -> mapper.map(driverData, Driver.class));
+    }
 
-
+    @Override
+    public Mono<Driver> updateVehicleCapacityOnDeliveredTicket(String id, Double weightDelivered) {
+        return repository
+                .findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("driver with id: " + id + " was not found")))
+                .flatMap(driverData -> {
+                    return repository.save(driverData.vehicleCapacityOnDeliveredTicket(weightDelivered));
+                })
+                .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
 

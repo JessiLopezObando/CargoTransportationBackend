@@ -6,6 +6,7 @@ import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketdelete
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketfindbydriveridandstatus.TicketgetByDriverIdAndStatusUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetall.TicketGetAllUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetbyid.TicketGetByIdUseCase;
+import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketrefused.TicketRefusedUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketsave.TicketSaveUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketupdate.TicketUpdateUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -197,6 +198,31 @@ public class RouterTicket {
                         .thenReturn(ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue("Ticket Updated to Accepted"))
+                        .flatMap(serverResponseMono -> serverResponseMono)
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+        );
+    }
+
+    @Bean
+    @RouterOperation(path = "/tickets/{id}/refused", produces = {
+            MediaType.APPLICATION_JSON_VALUE},
+            beanClass = TicketRefusedUseCase.class, method = RequestMethod.PATCH,
+            beanMethod = "apply",
+            operation = @Operation(operationId = "TicketRefused", tags = "Tickets usecases",
+                    parameters = {
+                            @Parameter(name = "id", description = "Ticket ID", required = true, in = ParameterIn.PATH)
+                    },
+                    responses = {
+                            @ApiResponse(responseCode = "200", description = "Success",
+                                    content = @Content (schema = @Schema(implementation = Ticket.class))),
+                            @ApiResponse(responseCode = "404", description = "Ticket Not Found")
+                    }))
+    public RouterFunction<ServerResponse> patchTicketRefused (TicketRefusedUseCase ticketRefusedUseCase){
+        return route(PATCH("/tickets/{id}/refused").and(accept(MediaType.APPLICATION_JSON)),
+                request -> ticketRefusedUseCase.apply(request.pathVariable("id"))
+                        .thenReturn(ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue("Ticket Updated to Refused"))
                         .flatMap(serverResponseMono -> serverResponseMono)
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
         );

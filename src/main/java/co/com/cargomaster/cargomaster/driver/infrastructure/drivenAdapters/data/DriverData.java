@@ -24,7 +24,7 @@ public class DriverData {
     private Integer age;
     private Vehicle vehicle;
 
-    public DriverData updateVehicleCapacity(Double requestWeight){
+    public DriverData vehicleCapacityOnAcceptedTicket(Double requestWeight){
         if (this.vehicle.getIsFull()){
             throw new IllegalArgumentException("The vehicle is full");
         } else if (requestWeight + this.vehicle.getCurrentCapacity() > this.vehicle.getTotalCapacity()) {
@@ -33,6 +33,20 @@ public class DriverData {
             this.vehicle.setCurrentCapacity(this.getVehicle().getCurrentCapacity() + requestWeight);
             if (Objects.equals(this.vehicle.getCurrentCapacity(), this.vehicle.getTotalCapacity())) {
                 this.vehicle.setIsFull(true);
+            }
+            return this;
+        }
+    }
+
+    public DriverData vehicleCapacityOnDeliveredTicket(Double weightDelivered){
+        if ( this.vehicle.getCurrentCapacity() == 0 ) {
+            throw new IllegalArgumentException("The vehicle does not have any currentCapacity, it is equal to 0");
+        } else if (this.vehicle.getCurrentCapacity() < weightDelivered){
+            throw new IllegalArgumentException("Can not be done this rest since the weight delivered is bigger than Current Capacity of the Vehicle");
+        } else {
+            this.vehicle.setCurrentCapacity(this.vehicle.getCurrentCapacity() - weightDelivered);
+            if (this.vehicle.getIsFull()){
+                this.vehicle.setIsFull(false);
             }
             return this;
         }

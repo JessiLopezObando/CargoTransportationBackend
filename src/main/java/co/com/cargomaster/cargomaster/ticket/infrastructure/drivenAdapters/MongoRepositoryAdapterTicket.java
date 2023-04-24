@@ -108,7 +108,33 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
 
     @Override
     public Mono<Ticket> updateStatusTicketToRefused(String id) {
-        return null;
+        return this.repository
+                .findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("ticket with id: " + id + " was not found")))
+                .flatMap(ticketData -> {
+                    if (ticketData.getStatus() != TicketStatus.PENDING) {
+                        throw new IllegalArgumentException("ticket status is not PENDING");
+                    }
+
+                    // Send email to the customer
+                    emailService.send("cargomaster23@gmail.com",
+                            ticketData.getCustomerEmail(),
+                            "Service Accepted by Driver" ,
+                            "Dear " + ticketData.getCustomerName() + ",\n\n" +
+                                    "Thank you for choosing our delivery service. We regret to inform you that the driver you selected to fulfill" +
+                                    " your delivery service request is unable to fulfill your request at this time.\n\n"
+                                    + "We understand that timely and reliable delivery is important to you, and we apologize for any inconvenience" +
+                                    " this may have caused. We invite you to select a different driver for your delivery service request through our platform\n\n"
+                                    + "If you have any questions or concerns regarding your delivery, please don't hesitate to reach out to our customer service" +
+                                    " team at [Phone Number] or [Email Address]. We are always here to help.\n\n"
+                                    + "Thank you for your understanding and we look forward to serving you in the future.\n\n"
+                                    +
+                                    "Best regards,\n" +
+                                    "CargoMasters");
+                    // Map the saved invoice data to Invoice class
+                    return repository.save(ticketData.changeStatusToRefused());
+                })
+                .map(ticketData -> mapper.map(ticketData, Ticket.class));
     }
 
 

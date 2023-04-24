@@ -13,7 +13,7 @@ public class Vehicle {
     private String brand;
     private String model;
     private String color;
-    private String type;
+    private VehicleType type;
     private Double totalCapacity;
     private Double availableCapacity;
     private Boolean isFull;

@@ -42,7 +42,7 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
     @Override
     public Mono<Ticket> saveTicket(Ticket ticket) {
         return this.repository
-                .save(mapper.map(ticket, TicketData.class))
+                .save(mapper.map(ticket.calculateCost(), TicketData.class))
                 .switchIfEmpty(Mono.empty())
                 .map(ticketData -> mapper.map(ticketData, Ticket.class));
     }
@@ -119,7 +119,7 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
                     // Send email to the customer
                     emailService.send("cargomaster23@gmail.com",
                             ticketData.getCustomerEmail(),
-                            "Service Accepted by Driver" ,
+                            "Service Refused by Driver" ,
                             "Dear " + ticketData.getCustomerName() + ",\n\n" +
                                     "Thank you for choosing our delivery service. We regret to inform you that the driver you selected to fulfill" +
                                     " your delivery service request is unable to fulfill your request at this time.\n\n"

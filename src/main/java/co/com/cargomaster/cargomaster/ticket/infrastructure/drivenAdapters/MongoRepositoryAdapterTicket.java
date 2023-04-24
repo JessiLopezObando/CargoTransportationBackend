@@ -137,5 +137,21 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
                 .map(ticketData -> mapper.map(ticketData, Ticket.class));
     }
 
+    @Override
+    public Mono<Ticket> updateStatusTicketToDelivered(String id) {
+        return this.repository
+                .findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("ticket with id: " + id + " was not found")))
+                .flatMap(ticketData -> {
+                    if (ticketData.getStatus() != TicketStatus.ACCEPTED){
+                        throw new IllegalArgumentException("ticket status is not ACCEPTED");
+                    }
+                    return repository.save(ticketData.changeStatusToDelivered());
+    })
+                .map(itemData -> mapper.map(itemData, Ticket.class));
+    }
+
+
+
 
 }

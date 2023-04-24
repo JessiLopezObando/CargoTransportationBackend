@@ -39,11 +39,26 @@ public class TicketData {
     @NotBlank(message = "packageReceiver can't be empty")
     private String packageReceiver;
     @NotNull(message = "weigth  can't be null")
-    private Integer weigth;
+    private Double weigth;
     @NotNull(message = "minutes  can't be null")
     private Integer minutes;
-    private Integer cost = 0;
+    private Double cost = 0.0;
 
     private TicketStatus status = TicketStatus.PENDING;
+
+    public TicketData changeStatusToAccepted(){
+        this.status = TicketStatus.ACCEPTED;
+        return this;
+    }
+
+    public TicketData changeStatusToRefused(){
+        this.status = TicketStatus.REFUSED;
+        return this;
+    }
+
+    public TicketData changeStatusToDelivered(){
+        this.status = TicketStatus.DELIVERED;
+        return this;
+    }
 
 }

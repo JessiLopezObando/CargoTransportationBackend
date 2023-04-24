@@ -1,6 +1,7 @@
 package co.com.cargomaster.cargomaster.ticket.infrastructure.entryPoints;
 
 import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
+import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketaccepted.TicketAcceptedUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketdelete.TicketDeleteUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketfindbydriveridandstatus.TicketgetByDriverIdAndStatusUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetall.TicketGetAllUseCase;
@@ -51,11 +52,15 @@ public class RouterTicket {
     }
 
     @Bean
-    @RouterOperation(path = "/tickets/{driverId}/{status}", produces = {
+    @RouterOperation(path = "/tickets/driverId/{driverId}/status/{status}", produces = {
             MediaType.APPLICATION_JSON_VALUE},
             beanClass = TicketgetByDriverIdAndStatusUseCase.class, method = RequestMethod.GET,
             beanMethod = "apply",
             operation = @Operation(operationId = "getTicketByDriverIdAndStatus", tags = "Tickets usecases",
+                    parameters = {
+                            @Parameter(name = "driverId", description = "Ticket Driver ID", required = true, in = ParameterIn.PATH),
+                            @Parameter(name = "status", description = "Ticket Status", required = true, in = ParameterIn.PATH)
+                    },
                     responses = {
                             @ApiResponse(responseCode = "200", description = "Success",
                                     content = @Content(schema = @Schema(implementation = Ticket.class))),
@@ -167,6 +172,31 @@ public class RouterTicket {
                         .thenReturn(ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(""))
+                        .flatMap(serverResponseMono -> serverResponseMono)
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+        );
+    }
+
+    @Bean
+    @RouterOperation(path = "/tickets/{id}/accepted", produces = {
+            MediaType.APPLICATION_JSON_VALUE},
+            beanClass = TicketAcceptedUseCase.class, method = RequestMethod.PATCH,
+            beanMethod = "apply",
+            operation = @Operation(operationId = "TicketAccepted", tags = "Tickets usecases",
+                    parameters = {
+                            @Parameter(name = "id", description = "Ticket ID", required = true, in = ParameterIn.PATH)
+                    },
+                    responses = {
+                            @ApiResponse(responseCode = "200", description = "Success",
+                                    content = @Content (schema = @Schema(implementation = Ticket.class))),
+                            @ApiResponse(responseCode = "404", description = "Ticket Not Found")
+                    }))
+    public RouterFunction<ServerResponse> patchTicketAccepted (TicketAcceptedUseCase ticketAcceptedUseCase){
+        return route(PATCH("/tickets/{id}/accepted").and(accept(MediaType.APPLICATION_JSON)),
+                request -> ticketAcceptedUseCase.apply(request.pathVariable("id"))
+                        .thenReturn(ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue("Ticket Updated to Accepted"))
                         .flatMap(serverResponseMono -> serverResponseMono)
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
         );

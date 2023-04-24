@@ -17,9 +17,9 @@ public class Ticket {
     private String customerName;
     private String customerEmail;
     private String packageReceiver;
-    private Integer weigth;
+    private Double weigth;
     private Integer minutes;
-    private Integer cost = 0;
+    private Double cost = 0.0;
 
     private TicketStatus status = TicketStatus.PENDING;
 

@@ -13,7 +13,7 @@ public class DriverUpdateWeightOnDeliveredTicketUseCase implements BiFunction<St
     private final DriversGateway gateway;
 
     @Override
-    public Mono<Driver> apply(String id, Double weightDelivered) {
-        return gateway.updateVehicleCapacityOnDeliveredTicket(id, weightDelivered);
+    public Mono<Driver> apply(String id, Double weight) {
+        return gateway.updateVehicleCapacityOnDeliveredTicket(id, weight);
     }
 }

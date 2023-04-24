@@ -14,5 +14,6 @@ public interface TicketRepository {
     Flux<Ticket> getTicketByDriverAndStatus (String driverId, String status);
     Mono<Ticket> updateStatusTicketToAccepted (String id);
     Mono<Ticket> updateStatusTicketToRefused (String id);
+    Mono<Ticket> updateStatusTicketToDelivered (String id);
 
 }

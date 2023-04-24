@@ -64,9 +64,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
         return repository
                 .findById(id)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("driver with id: " + id + " was not found")))
-                .flatMap(driverData -> {
-                        return repository.save(driverData.vehicleCapacityOnAcceptedTicket(weightRequested));
-                })
+                .flatMap(driverData -> repository.save(driverData.vehicleCapacityOnAcceptedTicket(weightRequested)))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
@@ -75,9 +73,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
         return repository
                 .findById(id)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("driver with id: " + id + " was not found")))
-                .flatMap(driverData -> {
-                    return repository.save(driverData.vehicleCapacityOnDeliveredTicket(weightDelivered));
-                })
+                .flatMap(driverData -> repository.save(driverData.vehicleCapacityOnDeliveredTicket(weightDelivered)))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 

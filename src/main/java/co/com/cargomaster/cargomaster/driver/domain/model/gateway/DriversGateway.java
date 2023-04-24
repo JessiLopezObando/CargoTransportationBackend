@@ -11,4 +11,6 @@ public interface DriversGateway {
     Mono<Driver> saveDriver(Driver driver);
     Mono<String> deleteDriver(String id);
     Mono<Driver> updateDriver(String id, Driver driver);
+
+    Mono<Driver> updateVehicleCapacity(String id, Double weightRequested);
 }

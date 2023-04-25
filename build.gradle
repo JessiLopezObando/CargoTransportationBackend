@@ -8,11 +8,6 @@ group = 'co.com.cargomaster.cargomaster'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
 
 jar {
     manifest {

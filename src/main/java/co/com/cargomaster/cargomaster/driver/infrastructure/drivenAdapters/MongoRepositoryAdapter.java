@@ -3,7 +3,6 @@ package co.com.cargomaster.cargomaster.driver.infrastructure.drivenAdapters;
 import co.com.cargomaster.cargomaster.driver.domain.model.Driver;
 import co.com.cargomaster.cargomaster.driver.domain.model.gateway.DriversGateway;
 import co.com.cargomaster.cargomaster.driver.infrastructure.drivenAdapters.data.DriverData;
-import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
@@ -86,9 +85,11 @@ public class MongoRepositoryAdapter implements DriversGateway {
     }
 
     @Override
-    public Flux<Driver> getDriversBasedOnRequestedWeight(Double requestedWeight) {
-        return repository.findByCurrentCapacityLessThanAndTotalCapacityGreaterThanCurrentCapacityPlusRequestedWeight(requestedWeight)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("There is no drivers available for requested weight: " + requestedWeight)))
+    public Flux<Driver> getDriversBasedOnRequestedWeight(Double weightRequested) {
+        return repository.findAll()
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("There is no drivers available for requested weight: " + weightRequested)))
+                .filter(driverData -> driverData.getVehicle().getCurrentCapacity() + weightRequested <= driverData.getVehicle().getTotalCapacity())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("There is no drivers available for requested weight: " + weightRequested)))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 

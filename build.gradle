@@ -16,7 +16,7 @@ configurations {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'co.com.cargomaster.cargmaster.CargomasterApplication'
+        attributes 'Main-Class': 'co.com.cargomaster.cargomaster.CargomasterApplication'
     }
 }
 

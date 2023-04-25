@@ -9,6 +9,11 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Repository
 @RequiredArgsConstructor
 public class MongoRepositoryAdapter implements DriversGateway {
@@ -33,11 +38,16 @@ public class MongoRepositoryAdapter implements DriversGateway {
 
     @Override
     public Mono<Driver> saveDriver(Driver driver) {
-        return repository
-                .save(mapper.map(driver.generateUsername(), DriverData.class))
-                .switchIfEmpty(Mono.empty())
-                .map(driverData -> mapper.map(driverData, Driver.class));
+        generateUsername(driver);
+        return repository.findDriverByEmail(driver.getEmail())
+                .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Driver with email " + driver.getEmail() + " already exists")))
+                .switchIfEmpty(repository.findDriverByDni(driver.getDni())
+                        .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Driver with dni " + driver.getDni() + " already exists")))
+                        .switchIfEmpty(repository.save(mapper.map(driver, DriverData.class))
+                                .map(driverData -> mapper.map(driverData, Driver.class)))
+                );
     }
+
 
     @Override
     public Mono<String> deleteDriver(String id) {
@@ -84,6 +94,23 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
+
+    public void generateUsername(Driver driver) {
+
+        String username = driver.getName().charAt(0) + driver.getLastName();
+        int random = (int) (Math.random() * 100);
+        username = username + "_" +random;
+
+
+        while (repository.findDriverByUsername(username) == null) {
+            random = (int) (Math.random() * 100);
+            username = username + random;
+        }
+
+        driver.setUsername(username);
+
+    }
+
     @Override
     public Flux<Driver> getDriversBasedOnRequestedWeight(Double weightRequested) {
         return repository.findAll()
@@ -92,6 +119,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("There is no drivers available for requested weight: " + weightRequested)))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
+
 
 
 

@@ -97,7 +97,9 @@ public class RouterRest {
                                 .flatMap(driverSaved -> ServerResponse.ok()
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .bodyValue(driverSaved)))
-                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage())));
+
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.BAD_REQUEST).bodyValue(throwable.getMessage())));
+
     }
 
     @Bean

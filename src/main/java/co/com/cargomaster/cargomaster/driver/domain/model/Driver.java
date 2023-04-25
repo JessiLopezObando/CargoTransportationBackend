@@ -20,5 +20,10 @@ public class Driver {
     private Integer age;
     private Vehicle vehicle;
 
+    public Driver generateUsername(){
+        this.username = this.name + this.lastName;
+        return this;
+    }
+
 
 }

@@ -3,6 +3,7 @@ package co.com.cargomaster.cargomaster.ticket.infrastructure.drivenAdapters.data
 import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.TicketStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -11,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.UUID;
 
 @Data
-@Document(collection = "item")
+@Document(collection = "tickets")
 @NoArgsConstructor
 public class TicketData {
 
@@ -19,7 +20,7 @@ public class TicketData {
     private String id = UUID.randomUUID().toString().substring(0,10);
     @NotNull(message = "driverID  can't be null")
     @NotBlank(message = "driverID can't be empty")
-    private String driverID;
+    private String driverId;
     @NotNull(message = "origin  can't be null")
     @NotBlank(message = "origin can't be empty")
     private String origin;
@@ -38,12 +39,30 @@ public class TicketData {
     @NotNull(message = "packageReceiver  can't be null")
     @NotBlank(message = "packageReceiver can't be empty")
     private String packageReceiver;
-    @NotNull(message = "weigth  can't be null")
-    private Integer weigth;
-    @NotNull(message = "minutes  can't be null")
+    @NotNull(message = "weight can't be null")
+    @Positive(message = "weight must be positive and bigger than 0")
+    private Double weight;
+
+    @NotNull(message = "minutes can't be null")
+    @Positive(message = "minutes must be positive and bigger than 0")
     private Integer minutes;
-    private Integer cost = 0;
+    private Double cost;
 
     private TicketStatus status = TicketStatus.PENDING;
+
+    public TicketData changeStatusToAccepted(){
+        this.status = TicketStatus.ACCEPTED;
+        return this;
+    }
+
+    public TicketData changeStatusToRefused(){
+        this.status = TicketStatus.REFUSED;
+        return this;
+    }
+
+    public TicketData changeStatusToDelivered(){
+        this.status = TicketStatus.DELIVERED;
+        return this;
+    }
 
 }

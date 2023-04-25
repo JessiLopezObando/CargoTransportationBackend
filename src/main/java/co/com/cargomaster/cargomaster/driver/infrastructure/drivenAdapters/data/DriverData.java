@@ -11,6 +11,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
+import java.util.Objects;
+
 
 @Data
 @Document(collection = "drivers")
@@ -43,4 +45,33 @@ public class DriverData {
     @NotNull(message = "Vehicle Data can't be null")
     @NotBlank(message = "Vehicle Data can't be empty")
     private Vehicle vehicle;
+
+    public DriverData vehicleCapacityOnAcceptedTicket(Double requestWeight){
+        if (this.vehicle.getIsFull()){
+            throw new IllegalArgumentException("The vehicle is full");
+        } else if (requestWeight + this.vehicle.getCurrentCapacity() > this.vehicle.getTotalCapacity()) {
+            throw new IllegalArgumentException("The weight requested exceeds the total capacity of the vehicle");
+        } else {
+            this.vehicle.setCurrentCapacity(this.getVehicle().getCurrentCapacity() + requestWeight);
+            if (Objects.equals(this.vehicle.getCurrentCapacity(), this.vehicle.getTotalCapacity())) {
+                this.vehicle.setIsFull(true);
+            }
+            return this;
+        }
+    }
+
+    public DriverData vehicleCapacityOnDeliveredTicket(Double weightDelivered){
+        if ( this.vehicle.getCurrentCapacity() == 0 ) {
+            throw new IllegalArgumentException("The vehicle does not have any currentCapacity, it is equal to 0");
+        } else if (this.vehicle.getCurrentCapacity() < weightDelivered){
+            throw new IllegalArgumentException("Can not be done this rest since the weight delivered is bigger than Current Capacity of the Vehicle");
+        } else {
+            this.vehicle.setCurrentCapacity(this.vehicle.getCurrentCapacity() - weightDelivered);
+            if (this.vehicle.getIsFull()){
+                this.vehicle.setIsFull(false);
+            }
+            return this;
+        }
+    }
+
 }

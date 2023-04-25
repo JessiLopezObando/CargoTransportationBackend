@@ -15,6 +15,6 @@ public class Vehicle {
     private String color;
     private VehicleType type;
     private Double totalCapacity;
-    private Double availableCapacity;
-    private Boolean isFull;
+    private Double currentCapacity = 0.0;
+    private Boolean isFull = false;
 }

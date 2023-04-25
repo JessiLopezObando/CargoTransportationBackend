@@ -17,11 +17,18 @@ public class Ticket {
     private String customerName;
     private String customerEmail;
     private String packageReceiver;
-    private Integer weigth;
+    private Double weight;
     private Integer minutes;
-    private Integer cost = 0;
+    private Double cost;
 
     private TicketStatus status = TicketStatus.PENDING;
+
+    public Ticket calculateCost (){
+        double timeRecharge = Math.ceil(minutes / 5.0) * 0.5;
+        double weightRecharge = Math.ceil(weight / 25.0) * 2;
+        this.cost = timeRecharge + weightRecharge;
+        return this;
+    }
 
 
 

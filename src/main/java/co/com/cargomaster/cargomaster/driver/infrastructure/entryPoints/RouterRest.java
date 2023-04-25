@@ -6,6 +6,8 @@ import co.com.cargomaster.cargomaster.driver.domain.usecase.getall.GetAllUseCase
 import co.com.cargomaster.cargomaster.driver.domain.usecase.getbyemail.GetDriverByEmailUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.getbyid.GetByIdUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.save.SaveUseCase;
+import co.com.cargomaster.cargomaster.driver.domain.usecase.update.DriverUpdateWeightOnAcceptedTicketUseCase;
+import co.com.cargomaster.cargomaster.driver.domain.usecase.update.DriverUpdateWeightOnDeliveredTicketUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.update.UpdateUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
 import io.swagger.v3.oas.annotations.Operation;
@@ -143,6 +145,7 @@ public class RouterRest {
                         .onErrorResume(error -> ServerResponse.badRequest().build()));
     }
 
+
     @Bean
     @RouterOperation(path = "/drivers/email/{email}", produces = {
             MediaType.APPLICATION_JSON_VALUE},
@@ -166,4 +169,58 @@ public class RouterRest {
                                 .bodyValue(driver))
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage())));
     }
+
+
+    @Bean
+    @RouterOperation(path = "/drivers/id/{id}/weight/{weight}/accepted", produces = {
+            MediaType.APPLICATION_JSON_VALUE},
+            beanClass = DriverUpdateWeightOnAcceptedTicketUseCase.class, method = RequestMethod.PATCH,
+            beanMethod = "apply",
+            operation = @Operation(operationId = "DriverUpdateWeight", tags = "Drivers usecases",
+                    parameters = {
+                            @Parameter(name = "id", description = "Driver ID", required = true, in = ParameterIn.PATH),
+                            @Parameter(name = "weight", description = "requested weight", required = true, in = ParameterIn.PATH)
+                    },
+                    responses = {
+                            @ApiResponse(responseCode = "200", description = "Success",
+                                    content = @Content(schema = @Schema(implementation = Ticket.class))),
+                            @ApiResponse(responseCode = "204", description = "Nothing to show")
+                    }))
+        public RouterFunction<ServerResponse> patchDriverWeightAccepted(DriverUpdateWeightOnAcceptedTicketUseCase driverUpdateWeightUseCase){
+            return route(PATCH("/drivers/id/{id}/weight/{weight}/accepted"),
+                    request -> driverUpdateWeightUseCase.apply( request.pathVariable("id"), Double.valueOf(request.pathVariable("weight")))
+                            .flatMap(item -> ServerResponse.ok()
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .bodyValue(item))
+                            .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+            );
+        }
+
+
+    @Bean
+    @RouterOperation(path = "/drivers/id/{id}/weight/{weight}/delivered", produces = {
+            MediaType.APPLICATION_JSON_VALUE},
+            beanClass = DriverUpdateWeightOnDeliveredTicketUseCase.class, method = RequestMethod.PATCH,
+            beanMethod = "apply",
+            operation = @Operation(operationId = "DriverUpdateWeightOnDeliveredTicket", tags = "Drivers usecases",
+                    parameters = {
+                            @Parameter(name = "id", description = "Driver ID", required = true, in = ParameterIn.PATH),
+                            @Parameter(name = "weight", description = " weight delivered", required = true, in = ParameterIn.PATH)
+                    },
+                    responses = {
+                            @ApiResponse(responseCode = "200", description = "Success",
+                                    content = @Content(schema = @Schema(implementation = Ticket.class))),
+                            @ApiResponse(responseCode = "204", description = "Nothing to show")
+                    }))
+    public RouterFunction<ServerResponse> patchDriverWeightDelivered(DriverUpdateWeightOnDeliveredTicketUseCase driverUpdateWeightOnDeliveredTicketUseCase){
+        return route(PATCH("/drivers/id/{id}/weight/{weight}/delivered"),
+                request -> driverUpdateWeightOnDeliveredTicketUseCase.apply( request.pathVariable("id"), Double.valueOf(request.pathVariable("weight")))
+                        .flatMap(item -> ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(item))
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+        );
+    }
+
+
 }

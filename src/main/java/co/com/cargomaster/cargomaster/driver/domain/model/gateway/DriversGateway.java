@@ -12,4 +12,7 @@ public interface DriversGateway {
     Mono<String> deleteDriver(String id);
     Mono<Driver> updateDriver(String id, Driver driver);
     Mono<Driver> getDriverByEmail(String email);
+    Mono<Driver> updateVehicleCapacityOnAcceptedTicket(String id, Double weightRequested);
+    Mono<Driver> updateVehicleCapacityOnDeliveredTicket(String id, Double weightDelivered);
+
 }

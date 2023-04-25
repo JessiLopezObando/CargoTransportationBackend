@@ -32,7 +32,6 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-@CrossOrigin(origins = "*")
 public class RouterRest {
 
     @Bean

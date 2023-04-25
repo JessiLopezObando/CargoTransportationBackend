@@ -15,4 +15,5 @@ public interface DriversGateway {
     Mono<Driver> updateVehicleCapacityOnAcceptedTicket(String id, Double weightRequested);
     Mono<Driver> updateVehicleCapacityOnDeliveredTicket(String id, Double weightDelivered);
 
+    Flux<Driver> getDriversBasedOnRequestedWeight(Double requestedWeight);
 }

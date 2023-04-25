@@ -8,4 +8,5 @@ import reactor.core.publisher.Mono;
 public interface MongoDBRepository extends ReactiveMongoRepository<DriverData, String> {
 
     Mono<Driver> findDriverByEmail(String email);
+
 }

@@ -39,11 +39,9 @@ public class DriverData {
     @NotBlank(message = "Phone can't be empty")
     private String phone;
     @NotNull(message = "Age can't be null")
-    @NotBlank(message = "Age can't be empty")
     @Min(value = 18, message = "You must be 18 or older")
     private Integer age;
     @NotNull(message = "Vehicle Data can't be null")
-    @NotBlank(message = "Vehicle Data can't be empty")
     private Vehicle vehicle;
 
     public DriverData vehicleCapacityOnAcceptedTicket(Double requestWeight){

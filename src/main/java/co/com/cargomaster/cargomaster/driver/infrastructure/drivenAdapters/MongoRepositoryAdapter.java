@@ -84,6 +84,15 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
+    @Override
+    public Flux<Driver> getDriversBasedOnRequestedWeight(Double weightRequested) {
+        return repository.findAll()
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("There is no drivers available for requested weight: " + weightRequested)))
+                .filter(driverData -> driverData.getVehicle().getCurrentCapacity() + weightRequested <= driverData.getVehicle().getTotalCapacity())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("There is no drivers available for requested weight: " + weightRequested)))
+                .map(driverData -> mapper.map(driverData, Driver.class));
+    }
+
 
 
 }

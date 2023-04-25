@@ -14,6 +14,12 @@ configurations {
     }
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'co.com.cargomaster.cargmaster.CargomasterApplication'
+    }
+}
+
 repositories {
     mavenCentral()
 }

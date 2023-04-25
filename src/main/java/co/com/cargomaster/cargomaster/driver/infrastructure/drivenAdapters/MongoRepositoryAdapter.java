@@ -27,7 +27,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
     public Mono<Driver> getDriverById(String id) {
         return repository
                 .findById(id)
-                .switchIfEmpty(Mono.empty())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Driver with id " + id + " was not found")))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
@@ -51,7 +51,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
     public Mono<Driver> updateDriver(String id, Driver driver) {
         return repository
                 .findById(id)
-                .switchIfEmpty(Mono.empty())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Driver with id " + id + " was not found")))
                 .flatMap(driverData -> {
                     driver.setId(id);
                     return repository.save(mapper.map(driver, DriverData.class));
@@ -60,6 +60,13 @@ public class MongoRepositoryAdapter implements DriversGateway {
     }
 
     @Override
+    public Mono<Driver> getDriverByEmail(String email) {
+        return repository
+                .findDriverByEmail(email)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Driver with email " + email + " was not found")))
+                .map(driverData -> mapper.map(driverData, Driver.class));
+    }
+
     public Mono<Driver> updateVehicleCapacityOnAcceptedTicket(String id, Double weightRequested) {
         return repository
                 .findById(id)
@@ -76,6 +83,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .flatMap(driverData -> repository.save(driverData.vehicleCapacityOnDeliveredTicket(weightDelivered)))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
+
 
 
 }

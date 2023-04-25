@@ -3,15 +3,11 @@ package co.com.cargomaster.cargomaster.driver.infrastructure.entryPoints;
 import co.com.cargomaster.cargomaster.driver.domain.model.Driver;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.delete.DeleteUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.getall.GetAllUseCase;
+import co.com.cargomaster.cargomaster.driver.domain.usecase.getbyemail.GetDriverByEmailUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.getbyid.GetByIdUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.save.SaveUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.update.UpdateUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
-import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketdelete.TicketDeleteUseCase;
-import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetall.TicketGetAllUseCase;
-import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetbyid.TicketGetByIdUseCase;
-import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketsave.TicketSaveUseCase;
-import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketupdate.TicketUpdateUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -20,9 +16,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springdoc.core.annotations.RouterOperation;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -121,7 +117,7 @@ public class RouterRest {
                 request -> useCase.apply(request.pathVariable("id"))
                         .flatMap(msg -> ServerResponse.ok()
                                 .bodyValue(msg + " deleted")
-                        .onErrorResume(error -> ServerResponse.notFound().build())));
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))));
     }
 
     @Bean
@@ -145,5 +141,29 @@ public class RouterRest {
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .bodyValue(driverUpdated)))
                         .onErrorResume(error -> ServerResponse.badRequest().build()));
+    }
+
+    @Bean
+    @RouterOperation(path = "/drivers/email/{email}", produces = {
+            MediaType.APPLICATION_JSON_VALUE},
+            beanClass = GetDriverByEmailUseCase.class,
+            method = RequestMethod.GET,
+            beanMethod = "apply",
+            operation = @Operation(operationId = "getDriverByEmail", tags = "Driver usecases",
+                    parameters = {
+                            @Parameter(name = "email", description = "Driver Email", required = true, in = ParameterIn.PATH)
+                    },
+                    responses = {
+                            @ApiResponse(responseCode = "200", description = "Success",
+                                    content = @Content (schema = @Schema(implementation = Driver.class))),
+                            @ApiResponse(responseCode = "404", description = "Not Found")
+                    }))
+    public RouterFunction<ServerResponse> getDriverByEmail(GetDriverByEmailUseCase useCase){
+        return route(GET("/drivers/email/{email}"),
+                request -> useCase.apply(request.pathVariable("email"))
+                        .flatMap(driver -> ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(driver))
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage())));
     }
 }

@@ -27,7 +27,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
     public Mono<Driver> getDriverById(String id) {
         return repository
                 .findById(id)
-                .switchIfEmpty(Mono.empty())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Driver with id " + id + " was not found")))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
@@ -51,11 +51,19 @@ public class MongoRepositoryAdapter implements DriversGateway {
     public Mono<Driver> updateDriver(String id, Driver driver) {
         return repository
                 .findById(id)
-                .switchIfEmpty(Mono.empty())
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Driver with id " + id + " was not found")))
                 .flatMap(driverData -> {
                     driver.setId(id);
                     return repository.save(mapper.map(driver, DriverData.class));
                 })
+                .map(driverData -> mapper.map(driverData, Driver.class));
+    }
+
+    @Override
+    public Mono<Driver> getDriverByEmail(String email) {
+        return repository
+                .findDriverByEmail(email)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Driver with email " + email + " was not found")))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 }

@@ -3,6 +3,7 @@ package co.com.cargomaster.cargomaster.driver.infrastructure.drivenAdapters;
 import co.com.cargomaster.cargomaster.driver.domain.model.Driver;
 import co.com.cargomaster.cargomaster.driver.domain.model.gateway.DriversGateway;
 import co.com.cargomaster.cargomaster.driver.infrastructure.drivenAdapters.data.DriverData;
+import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
@@ -81,6 +82,13 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .findById(id)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("driver with id: " + id + " was not found")))
                 .flatMap(driverData -> repository.save(driverData.vehicleCapacityOnDeliveredTicket(weightDelivered)))
+                .map(driverData -> mapper.map(driverData, Driver.class));
+    }
+
+    @Override
+    public Flux<Driver> getDriversBasedOnRequestedWeight(Double requestedWeight) {
+        return repository.findByCurrentCapacityLessThanAndTotalCapacityGreaterThanCurrentCapacityPlusRequestedWeight(requestedWeight)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("There is no drivers available for requested weight: " + requestedWeight)))
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 

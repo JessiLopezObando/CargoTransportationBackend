@@ -4,12 +4,14 @@ import co.com.cargomaster.cargomaster.driver.domain.model.Driver;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.delete.DeleteUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.getall.GetAllUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.getbyemail.GetDriverByEmailUseCase;
+import co.com.cargomaster.cargomaster.driver.domain.usecase.getbasedonrequestedweight.DriverGetBasedOnRequestedWeight;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.getbyid.GetByIdUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.save.SaveUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.update.DriverUpdateWeightOnAcceptedTicketUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.update.DriverUpdateWeightOnDeliveredTicketUseCase;
 import co.com.cargomaster.cargomaster.driver.domain.usecase.update.UpdateUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
+import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketfindbydriveridandstatus.TicketgetByDriverIdAndStatusUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -172,6 +174,29 @@ public class RouterRest {
 
 
     @Bean
+    @RouterOperation(path = "/drivers/request/weight/{requestedWeight}", produces = {
+            MediaType.APPLICATION_JSON_VALUE},
+            beanClass = DriverGetBasedOnRequestedWeight.class, method = RequestMethod.GET,
+            beanMethod = "apply",
+            operation = @Operation(operationId = "DriverGetBasedOnRequestedWeight", tags = "Drivers usecases",
+                    parameters = {
+                            @Parameter(name = "requestedWeight", description = "Weight requested by Customer for deliver service", required = true, in = ParameterIn.PATH),
+                    },
+                    responses = {
+                            @ApiResponse(responseCode = "200", description = "Success",
+                                    content = @Content(schema = @Schema(implementation = Driver.class))),
+                            @ApiResponse(responseCode = "204", description = "Nothing to show")
+                    }))
+    public RouterFunction<ServerResponse> getDriversBasedOnRequestedWeight (DriverGetBasedOnRequestedWeight driverGetBasedOnRequestedWeight) {
+        return route(GET("/drivers/request/weight/{requestedWeight}"),
+                request -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromPublisher(driverGetBasedOnRequestedWeight.apply(Double.valueOf(request.pathVariable("requestedWeight"))), Driver.class))
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+        );
+    }
+
+    @Bean
     @RouterOperation(path = "/drivers/id/{id}/weight/{weight}/accepted", produces = {
             MediaType.APPLICATION_JSON_VALUE},
             beanClass = DriverUpdateWeightOnAcceptedTicketUseCase.class, method = RequestMethod.PATCH,
@@ -221,6 +246,5 @@ public class RouterRest {
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
         );
     }
-
 
 }

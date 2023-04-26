@@ -94,7 +94,7 @@ public class RouterRest {
         return route(POST("/drivers").and(accept(MediaType.APPLICATION_JSON)),
                 request -> request.bodyToMono(Driver.class)
                         .flatMap(driver -> useCase.apply(driver)
-                                .flatMap(driverSaved -> ServerResponse.ok()
+                                .flatMap(driverSaved -> ServerResponse.status(HttpStatus.CREATED)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .bodyValue(driverSaved)))
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.BAD_REQUEST).bodyValue(throwable.getMessage())));

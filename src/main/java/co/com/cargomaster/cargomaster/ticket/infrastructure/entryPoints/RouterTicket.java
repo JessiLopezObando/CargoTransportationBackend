@@ -221,12 +221,14 @@ public class RouterTicket {
                     }))
     public RouterFunction<ServerResponse> patchTicketAccepted (TicketAcceptedUseCase ticketAcceptedUseCase){
         return route(PATCH("/tickets/{id}/accepted").and(accept(MediaType.APPLICATION_JSON)),
-                request -> ticketAcceptedUseCase.apply(request.pathVariable("id"))
-                        .thenReturn(ServerResponse.ok()
+        request -> request.bodyToMono(Ticket.class)
+                .flatMap(ticket -> ticketAcceptedUseCase.apply(request.pathVariable("id"))
+                        .flatMap(result -> ServerResponse.status(201)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue("Ticket Updated to Accepted"))
-                        .flatMap(serverResponseMono -> serverResponseMono)
-                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+                                .bodyValue(result))
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.BAD_REQUEST)
+                                .bodyValue(throwable.getMessage()))
+                )
         );
     }
 
@@ -246,12 +248,14 @@ public class RouterTicket {
                     }))
     public RouterFunction<ServerResponse> patchTicketRefused (TicketRefusedUseCase ticketRefusedUseCase){
         return route(PATCH("/tickets/{id}/refused").and(accept(MediaType.APPLICATION_JSON)),
-                request -> ticketRefusedUseCase.apply(request.pathVariable("id"))
-                        .thenReturn(ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue("Ticket Updated to Refused"))
-                        .flatMap(serverResponseMono -> serverResponseMono)
-                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+                request -> request.bodyToMono(Ticket.class)
+                        .flatMap(ticket -> ticketRefusedUseCase.apply(request.pathVariable("id"))
+                                .flatMap(result -> ServerResponse.status(201)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(result))
+                                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.BAD_REQUEST)
+                                        .bodyValue(throwable.getMessage()))
+                        )
         );
     }
 
@@ -271,12 +275,14 @@ public class RouterTicket {
                     }))
     public RouterFunction<ServerResponse> patchTicketDelivered (TicketDeliveredUseCase ticketDeliveredUseCase){
         return route(PATCH("/tickets/{id}/delivered").and(accept(MediaType.APPLICATION_JSON)),
-                request -> ticketDeliveredUseCase.apply(request.pathVariable("id"))
-                        .thenReturn(ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue("Ticket Updated to delivered"))
-                        .flatMap(serverResponseMono -> serverResponseMono)
-                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+                request -> request.bodyToMono(Ticket.class)
+                        .flatMap(ticket -> ticketDeliveredUseCase.apply(request.pathVariable("id"))
+                                .flatMap(result -> ServerResponse.status(201)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(result))
+                                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.BAD_REQUEST)
+                                        .bodyValue(throwable.getMessage()))
+                        )
         );
     }
 

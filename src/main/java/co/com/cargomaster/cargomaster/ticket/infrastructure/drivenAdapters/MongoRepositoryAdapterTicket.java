@@ -71,7 +71,7 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
     @Override
     public Flux<Ticket> getTicketByDriverAndStatus(String driverId, String status) {
         return this.repository.findByDriverIdAndStatus(driverId, status)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("tickets with the id: " + driverId + " was not found")))
+                .switchIfEmpty(Flux.empty())
                 .map(ticketData -> mapper.map(ticketData, Ticket.class));
     }
 

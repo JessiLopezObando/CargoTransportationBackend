@@ -15,5 +15,6 @@ public interface TicketRepository {
     Mono<Ticket> updateStatusTicketToAccepted (String id);
     Mono<Ticket> updateStatusTicketToRefused (String id);
     Mono<Ticket> updateStatusTicketToDelivered (String id);
+    Mono<Double> getCostBasedOnMinutesAndWeight (Integer minutes, Double weight);
 
 }

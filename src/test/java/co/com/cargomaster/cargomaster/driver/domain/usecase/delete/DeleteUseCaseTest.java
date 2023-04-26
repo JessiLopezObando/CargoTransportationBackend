@@ -1,9 +1,12 @@
-package co.com.cargomaster.cargomaster.driver.domain.usecase.update;
+package co.com.cargomaster.cargomaster.driver.domain.usecase.delete;
 
 import co.com.cargomaster.cargomaster.driver.domain.model.Driver;
 import co.com.cargomaster.cargomaster.driver.domain.model.ValueObjects.Vehicle;
 import co.com.cargomaster.cargomaster.driver.domain.model.ValueObjects.VehicleType;
 import co.com.cargomaster.cargomaster.driver.domain.model.gateway.DriversGateway;
+import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
+import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.repository.TicketRepository;
+import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketdelete.TicketDeleteUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,44 +20,34 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class DriverUpdateWeightOnDeliveredTicketUseCaseTest {
+class DeleteUseCaseTest {
 
     @Mock
     DriversGateway gateway;
-    DriverUpdateWeightOnDeliveredTicketUseCase useCase;
+    DeleteUseCase useCase;
 
     @BeforeEach
-    void init(){ useCase = new DriverUpdateWeightOnDeliveredTicketUseCase(gateway);}
+    void init(){ useCase = new DeleteUseCase(gateway);}
 
     @Test
-    @DisplayName("DriverUpdateWeightOnDeliveredTicketUseCase")
+    @DisplayName("DeleteUseCase")
     void apply() {
-
-        double weight = 5.0;
-
+        String id = "testId";
         Driver driver1 = new Driver();
         Vehicle vehicle1 = new Vehicle();
         vehicle1.setType(VehicleType.TRUCK);
-        vehicle1.setCurrentCapacity(10.0);
-        vehicle1.setTotalCapacity(20.0);
+        driver1.setId(id);
         driver1.setVehicle(vehicle1);
 
-        Driver driverUpdated = new Driver();
-        Vehicle vehicle2 = new Vehicle();
-        vehicle2.setType(VehicleType.TRUCK);
-        vehicle2.setCurrentCapacity(vehicle1.getCurrentCapacity() - weight);
-        vehicle2.setTotalCapacity(20.0);
-        driverUpdated.setVehicle(vehicle2);
+        Mockito.when(gateway.deleteDriver(driver1.getId())).thenReturn(Mono.just(id));
 
-        Mockito.when(gateway.updateVehicleCapacityOnDeliveredTicket(driver1.getId(), weight)).thenReturn(Mono.just(driverUpdated));
-
-        var response = useCase.apply(driver1.getId(), weight);
+        var response = useCase.apply(driver1.getId());
 
         StepVerifier.create(response)
-                .expectNext(driverUpdated)
+                .expectNext(id)
                 .verifyComplete();
 
-        Mockito.verify(gateway).updateVehicleCapacityOnDeliveredTicket(driver1.getId(), weight);
+        Mockito.verify(gateway).deleteDriver(id);
     }
 
 }

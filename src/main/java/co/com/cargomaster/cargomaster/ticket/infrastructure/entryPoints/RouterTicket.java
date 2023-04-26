@@ -115,8 +115,7 @@ public class RouterTicket {
                             @Parameter(name = "weight", description = "requested weight", required = true, in = ParameterIn.PATH)
                     },
                     responses = {
-                            @ApiResponse(responseCode = "200", description = "Success",
-                                    content = @Content(schema = @Schema(implementation = Ticket.class))),
+                            @ApiResponse(responseCode = "200", description = "Success"),
                             @ApiResponse(responseCode = "204", description = "Nothing to show")
                     }))
     public RouterFunction<ServerResponse> getCostBasedOnMinutesAndWeight(TicketGetCostUseCase ticketGetCostUseCase){

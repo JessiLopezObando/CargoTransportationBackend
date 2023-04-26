@@ -14,6 +14,8 @@ public interface MongoDBRepository extends ReactiveMongoRepository<DriverData, S
     Mono<Driver> findDriverByDni(String dni);
     Flux<Driver> findDriverByUsername(String username);
 
+    Mono<Driver> findDriverByVehiclePlate(String vehiclePlate);
+
 
 
 }

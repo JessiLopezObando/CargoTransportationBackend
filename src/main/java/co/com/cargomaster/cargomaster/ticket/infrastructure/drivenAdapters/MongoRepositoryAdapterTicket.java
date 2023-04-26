@@ -151,7 +151,13 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
                 .map(itemData -> mapper.map(itemData, Ticket.class));
     }
 
-
+    @Override
+    public Mono<Double> getCostBasedOnMinutesAndWeight(Integer minutes, Double weight) {
+        double timeRecharge = Math.ceil(minutes / 5.0) * 0.5;
+        double weightRecharge = Math.ceil(weight / 25.0) * 2;
+        Double cost = (timeRecharge + weightRecharge);
+        return Mono.just(cost);
+    }
 
 
 }

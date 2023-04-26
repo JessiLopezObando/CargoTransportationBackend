@@ -1,5 +1,6 @@
 package co.com.cargomaster.cargomaster.ticket.infrastructure.entryPoints;
 
+import co.com.cargomaster.cargomaster.driver.domain.usecase.update.DriverUpdateWeightOnAcceptedTicketUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketaccepted.TicketAcceptedUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketdelete.TicketDeleteUseCase;
@@ -7,6 +8,7 @@ import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketdelive
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketfindbydriveridandstatus.TicketgetByDriverIdAndStatusUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetall.TicketGetAllUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetbyid.TicketGetByIdUseCase;
+import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketgetcost.TicketGetCostUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketrefused.TicketRefusedUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketsave.TicketSaveUseCase;
 import co.com.cargomaster.cargomaster.ticket.domain.usecases.ticket.ticketupdate.TicketUpdateUseCase;
@@ -98,6 +100,31 @@ public class RouterTicket {
                         .flatMap(item -> ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(item))
+                        .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
+        );
+    }
+
+    @Bean
+    @RouterOperation(path = "/tickets/cost/minutes/{minutes}/weight/{weight}", produces = {
+            MediaType.APPLICATION_JSON_VALUE},
+            beanClass = TicketGetCostUseCase.class, method = RequestMethod.GET,
+            beanMethod = "apply",
+            operation = @Operation(operationId = "TicketGetCostUseCase", tags = "Tickets usecases",
+                    parameters = {
+                            @Parameter(name = "minutes", description = "minutes requested", required = true, in = ParameterIn.PATH),
+                            @Parameter(name = "weight", description = "requested weight", required = true, in = ParameterIn.PATH)
+                    },
+                    responses = {
+                            @ApiResponse(responseCode = "200", description = "Success",
+                                    content = @Content(schema = @Schema(implementation = Ticket.class))),
+                            @ApiResponse(responseCode = "204", description = "Nothing to show")
+                    }))
+    public RouterFunction<ServerResponse> getCostBasedOnMinutesAndWeight(TicketGetCostUseCase ticketGetCostUseCase){
+        return route(GET("/tickets/cost/minutes/{minutes}/weight/{weight}"),
+                request -> ticketGetCostUseCase.apply(Integer.valueOf(request.pathVariable("minutes")), Double.valueOf(request.pathVariable("weight")))
+                        .flatMap(cost -> ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue("Cost: " + cost))
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
         );
     }

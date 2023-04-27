@@ -44,9 +44,9 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .switchIfEmpty(repository.findDriverByDni(driver.getDni())
                         .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Driver with dni " + driver.getDni() + " already exists")))
                         .switchIfEmpty(repository.findDriverByVehiclePlate(driver.getVehicle().getPlate()))
-                            .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Vehicle with  " + driver.getVehicle().getPlate() + " already exists")))
-                            .switchIfEmpty(repository.save(mapper.map(driver, DriverData.class))
-                                    .map(driverData -> mapper.map(driverData, Driver.class)))
+                        .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Vehicle with  " + driver.getVehicle().getPlate() + " already exists")))
+                        .switchIfEmpty(repository.save(mapper.map(driver, DriverData.class))
+                                .map(driverData -> mapper.map(driverData, Driver.class)))
                 );
     }
 
@@ -96,7 +96,6 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
-
     public void generateUsername(Driver driver) {
 
         String username = driver.getName().charAt(0) + driver.getLastName();
@@ -110,18 +109,8 @@ public class MongoRepositoryAdapter implements DriversGateway {
         }
 
         driver.setUsername(username);
-        driver.plateToUpperCase();
+
     }
-
-    @Override
-    public Flux<Driver> getDriversBasedOnRequestedWeight(Double weightRequested) {
-        return repository.findAll()
-                .filter(driverData -> driverData.getVehicle().getCurrentCapacity() + weightRequested <= driverData.getVehicle().getTotalCapacity())
-                .switchIfEmpty(Flux.empty())
-                .map(driverData -> mapper.map(driverData, Driver.class));
-    }
-
-
 
 
 }

@@ -20,6 +20,8 @@ public class Driver {
     private Integer age;
     private Vehicle vehicle;
 
-
+    public void plateToUpperCase(){
+        this.getVehicle().setPlate(this.getVehicle().getPlate().toUpperCase());
+    }
 
 }

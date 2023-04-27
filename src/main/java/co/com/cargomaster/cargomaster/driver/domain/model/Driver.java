@@ -20,17 +20,13 @@ public class Driver {
     private Integer age;
     private Vehicle vehicle;
 
-    public Driver setToUpperCase(){
 
-        this.name = this.name.toUpperCase();
-        this.lastName = this.lastName.toUpperCase();
-        this.email = this.email.toUpperCase();
-        this.vehicle.setPlate(this.vehicle.getPlate().toUpperCase());
-        this.vehicle.setBrand(this.vehicle.getBrand().toUpperCase());
-        this.vehicle.setModel(this.vehicle.getModel().toUpperCase());
-        this.vehicle.setColor(this.vehicle.getColor().toUpperCase());
-
-        return this;
+    public Driver vehicleWeight(Vehicle vehicle){
+        if (vehicle.getTotalCapacity() < 0) {
+            throw new IllegalArgumentException("Total capacity can't be negative");
+        } else {
+            return this;
+        }
     }
 
 

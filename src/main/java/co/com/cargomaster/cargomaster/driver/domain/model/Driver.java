@@ -21,5 +21,13 @@ public class Driver {
     private Vehicle vehicle;
 
 
+    public Driver vehicleWeight(Vehicle vehicle){
+        if (vehicle.getTotalCapacity() < 0) {
+            throw new IllegalArgumentException("Total capacity can't be negative");
+        } else {
+            return this;
+        }
+    }
+
 
 }

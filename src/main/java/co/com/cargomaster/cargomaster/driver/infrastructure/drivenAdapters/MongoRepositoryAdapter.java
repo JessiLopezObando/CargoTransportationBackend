@@ -44,8 +44,8 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .switchIfEmpty(repository.findDriverByDni(driver.getDni())
                         .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Driver with dni " + driver.getDni() + " already exists")))
                         .switchIfEmpty(repository.findDriverByVehiclePlate(driver.getVehicle().getPlate()))
-                        .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Vehicle with  " + driver.getVehicle().getPlate() + " already exists")))
-                        .switchIfEmpty(repository.save(mapper.map(driver, DriverData.class))
+                        .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Vehicle with plate " + driver.getVehicle().getPlate() + " already exists")))
+                        .switchIfEmpty(repository.save(mapper.map(driver.vehicleWeight(driver.getVehicle()), DriverData.class))
                                 .map(driverData -> mapper.map(driverData, Driver.class)))
                 );
     }
@@ -66,7 +66,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Driver with id " + id + " was not found")))
                 .flatMap(driverData -> {
                     driver.setId(id);
-                    return repository.save(mapper.map(driver, DriverData.class));
+                    return repository.save(mapper.map(driver.vehicleWeight(driver.getVehicle()), DriverData.class));
                 })
                 .map(driverData -> mapper.map(driverData, Driver.class));
     }
@@ -108,7 +108,7 @@ public class MongoRepositoryAdapter implements DriversGateway {
             username = username + random;
         }
 
-        driver.setUsername(username);
+        driver.setUsername(username.toUpperCase());
 
     }
 

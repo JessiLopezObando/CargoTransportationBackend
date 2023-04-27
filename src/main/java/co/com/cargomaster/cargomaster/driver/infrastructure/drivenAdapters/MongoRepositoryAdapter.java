@@ -44,9 +44,9 @@ public class MongoRepositoryAdapter implements DriversGateway {
                 .switchIfEmpty(repository.findDriverByDni(driver.getDni())
                         .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Driver with dni " + driver.getDni() + " already exists")))
                         .switchIfEmpty(repository.findDriverByVehiclePlate(driver.getVehicle().getPlate()))
-                        .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Vehicle with plate " + driver.getVehicle().getPlate() + " already exists")))
-                        .switchIfEmpty(repository.save(mapper.map(driver.vehicleWeight(driver.getVehicle()), DriverData.class))
-                                .map(driverData -> mapper.map(driverData, Driver.class)))
+                            .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Vehicle with plate " + driver.getVehicle().getPlate() + " already exists")))
+                            .switchIfEmpty(repository.save(mapper.map(driver.vehicleWeight(driver.getVehicle()), DriverData.class))
+                                    .map(driverData -> mapper.map(driverData, Driver.class)))
                 );
     }
 
@@ -108,8 +108,17 @@ public class MongoRepositoryAdapter implements DriversGateway {
             username = username + random;
         }
 
-        driver.setUsername(username.toUpperCase());
+        driver.setUsername(username);
+        driver.plateToUpperCase();
 
+    }
+    
+     @Override
+    public Flux<Driver> getDriversBasedOnRequestedWeight(Double weightRequested) {
+        return repository.findAll()
+                .filter(driverData -> driverData.getVehicle().getCurrentCapacity() + weightRequested <= driverData.getVehicle().getTotalCapacity())
+                .switchIfEmpty(Flux.empty())
+                .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
 

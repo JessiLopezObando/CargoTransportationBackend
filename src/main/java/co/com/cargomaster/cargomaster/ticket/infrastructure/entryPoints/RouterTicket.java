@@ -123,7 +123,7 @@ public class RouterTicket {
                 request -> ticketGetCostUseCase.apply(Integer.valueOf(request.pathVariable("minutes")), Double.valueOf(request.pathVariable("weight")))
                         .flatMap(cost -> ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue("Cost: " + cost))
+                                .bodyValue(cost))
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(throwable.getMessage()))
         );
     }

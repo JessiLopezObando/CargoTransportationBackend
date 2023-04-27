@@ -153,6 +153,9 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
 
     @Override
     public Mono<Double> getCostBasedOnMinutesAndWeight(Integer minutes, Double weight) {
+        if (minutes <= 0 || weight <= 0){
+            return Mono.error(new IllegalArgumentException("minutes and weight must be positive and above 0 numbers"));
+        }
         double timeRecharge = Math.ceil(minutes / 5.0) * 0.5;
         double weightRecharge = Math.ceil(weight / 25.0) * 2;
         Double cost = (timeRecharge + weightRecharge);

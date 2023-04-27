@@ -21,6 +21,10 @@ public class Driver {
     private Vehicle vehicle;
 
 
+    public void plateToUpperCase(){
+        this.getVehicle().setPlate(this.getVehicle().getPlate().toUpperCase());
+    }
+    
     public Driver vehicleWeight(Vehicle vehicle){
         if (vehicle.getTotalCapacity() < 0) {
             throw new IllegalArgumentException("Total capacity can't be negative");

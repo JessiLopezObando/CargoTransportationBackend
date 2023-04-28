@@ -20,8 +20,24 @@ public class Driver {
     private Integer age;
     private Vehicle vehicle;
 
-    public void plateToUpperCase(){
+
+    public String plateToUpperCase(){
         this.getVehicle().setPlate(this.getVehicle().getPlate().toUpperCase());
+        return this.getVehicle().getPlate();
     }
+
+    public Driver setId (String id){
+        this.id = id;
+        return this;
+    }
+    
+    public Driver vehicleWeight(Vehicle vehicle){
+        if (vehicle.getTotalCapacity() <= 0) {
+            throw new IllegalArgumentException("Total capacity can't be negative or 0");
+        } else {
+            return this;
+        }
+    }
+
 
 }

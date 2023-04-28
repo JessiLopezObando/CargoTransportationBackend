@@ -1,5 +1,6 @@
 package co.com.cargomaster.cargomaster.driver.domain.model.ValueObjects;
 
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

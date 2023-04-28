@@ -61,15 +61,12 @@ public class MongoRepositoryAdapter implements DriversGateway {
 
     @Override
     public Mono<Driver> updateDriver(String id, Driver driver) {
-        return repository
-                .findById(id)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Driver with id " + id + " was not found")))
-                .flatMap(driverData -> {
-                    driver.setId(id);
-                    return repository.save(mapper.map(driver.vehicleWeight(driver.getVehicle()), DriverData.class));
-                })
-                .map(driverData -> mapper.map(driverData, Driver.class));
+        return repository.findDriverByVehiclePlate(driver.plateToUpperCase())
+                            .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Vehicle with plate " + driver.getVehicle().getPlate() + " already exists")))
+                .switchIfEmpty(repository.save(mapper.map(driver.setId(id).vehicleWeight(driver.getVehicle()), DriverData.class))
+                        .map(driverData -> mapper.map(driverData, Driver.class)));
     }
+
 
     @Override
     public Mono<Driver> getDriverByEmail(String email) {

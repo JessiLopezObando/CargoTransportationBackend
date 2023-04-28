@@ -91,14 +91,16 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
                             "Service Accepted by Driver" ,
                             "Dear " + ticketData.getCustomerName() + ",\n\n" +
                                     "We are pleased to inform you that we have received your request for a delivery service and a driver has accepted to be the carrier for your package.\n\n"
-                                    + "The driver's name is [Driver Name] and their contact information is as follows:\n\n"
-                                    + "Phone Number: [Driver Phone Number]\n\n"
-                                    + "Phone Number: [Driver Phone Number]\n\n"
+                                    + "Below is ticket information:\n\n"
+                                    + "Origin: "+ ticketData.getOrigin()+ ",\n\n"
+                                    + "Destination:"+ ticketData.getDestination()+ ",\n\n"
+                                    + "Receiver's name: " + ticketData.getPackageReceiver()+",\n\n"
+                                    + "Service cost: " + ticketData.getCost()+",\n\n"
                                     +
-                                    "You can contact the driver directly to arrange for pick-up and delivery of your package. If you have any questions or concerns regarding the delivery, please don't hesitate to reach out to our customer service team at [Phone Number] or [Email Address]. We are always here to help.\n\n" +
+                                    "You can contact us at cargomaster23@gmail.com if you have any questions or concerns regarding the delivery. We are always here to help.\n\n" +
                                     "Thank you for choosing our delivery service and we look forward to serving you in the future.\n\n" +
                                     "Best regards,\n" +
-                                    "CargoMasters");
+                                    "Cargo Masters Team");
                     // Map the saved invoice data to Invoice class
                     return repository.save(ticketData.changeStatusToAccepted());
                 })
@@ -121,16 +123,16 @@ public class MongoRepositoryAdapterTicket implements TicketRepository {
                             ticketData.getCustomerEmail(),
                             "Service Refused by Driver" ,
                             "Dear " + ticketData.getCustomerName() + ",\n\n" +
-                                    "Thank you for choosing our delivery service. We regret to inform you that the driver you selected to fulfill" +
-                                    " your delivery service request is unable to fulfill your request at this time.\n\n"
+                                    "Thank you for choosing our delivery service. We regret to inform you that the driver you selected to deliver" +
+                                    " your package is unable to fulfill your request at this time.\n\n"
                                     + "We understand that timely and reliable delivery is important to you, and we apologize for any inconvenience" +
                                     " this may have caused. We invite you to select a different driver for your delivery service request through our platform\n\n"
                                     + "If you have any questions or concerns regarding your delivery, please don't hesitate to reach out to our customer service" +
-                                    " team at [Phone Number] or [Email Address]. We are always here to help.\n\n"
+                                    " team at cargomaster23@gmail.com. We are always here to help.\n\n"
                                     + "Thank you for your understanding and we look forward to serving you in the future.\n\n"
                                     +
                                     "Best regards,\n" +
-                                    "CargoMasters");
+                                    "Cargo Masters Team");
                     // Map the saved invoice data to Invoice class
                     return repository.save(ticketData.changeStatusToRefused());
                 })

@@ -144,7 +144,7 @@ public class RouterRest {
                                 .flatMap(driverUpdated -> ServerResponse.ok()
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .bodyValue(driverUpdated)))
-                        .onErrorResume(error -> ServerResponse.badRequest().build()));
+                        .onErrorResume(error -> ServerResponse.status(HttpStatus.BAD_REQUEST).bodyValue(error.getMessage())));
     }
 
 

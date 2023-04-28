@@ -3,6 +3,8 @@ package co.com.cargomaster.cargomaster.driver.infrastructure.drivenAdapters;
 import co.com.cargomaster.cargomaster.driver.domain.model.Driver;
 import co.com.cargomaster.cargomaster.driver.domain.model.gateway.DriversGateway;
 import co.com.cargomaster.cargomaster.driver.infrastructure.drivenAdapters.data.DriverData;
+import co.com.cargomaster.cargomaster.ticket.domain.model.ticket.Ticket;
+import co.com.cargomaster.cargomaster.ticket.infrastructure.drivenAdapters.data.TicketData;
 import lombok.RequiredArgsConstructor;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
@@ -61,10 +63,14 @@ public class MongoRepositoryAdapter implements DriversGateway {
 
     @Override
     public Mono<Driver> updateDriver(String id, Driver driver) {
-        return repository.findDriverByVehiclePlate(driver.plateToUpperCase())
-                            .flatMap(existingUser -> Mono.<Driver>error(new RuntimeException("Vehicle with plate " + driver.getVehicle().getPlate() + " already exists")))
-                .switchIfEmpty(repository.save(mapper.map(driver.setId(id).vehicleWeight(driver.getVehicle()), DriverData.class))
-                        .map(driverData -> mapper.map(driverData, Driver.class)));
+        return this.repository
+                .findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("driver with id: " + id + " was not found")))
+                .flatMap(driverData -> {
+                    driver.setId(driverData.getId());
+                    return repository.save(mapper.map(driver, DriverData.class));
+                })
+                .map(driverData -> mapper.map(driverData, Driver.class));
     }
 
 
